@@ -11,8 +11,10 @@ import { createServer } from "http";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimiter from "express-rate-limit";
+//middleware
+import authenticateUser from "./middleware/authentication";
 dotenv.config();
-
+import authRouter from "./routes/auth";
 const app: Application = express();
 const PORT = process.env.PORT || 3001;
 
@@ -31,8 +33,7 @@ app.use(helmet());
 //Error Handler
 
 //Routes
-app.use("api/v1/", (req, res) => {});
-
+app.use("api/v1/auth", authRouter);
 const server = createServer(app);
 const start = async () => {
   try {
