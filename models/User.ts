@@ -12,8 +12,13 @@ interface UserDocument extends Document {
 
   // user schema methods
   createJWT: () => string; // define the createJWT method
-  comparePassword: (candidatePassword: string) => string; // define the createJWT method
+  comparePassword: (candidatePassword: string) => boolean; // define the createJWT method
 }
+export enum UserRole {
+  user = "user",
+  admin = "admin",
+}
+
 const UserSchema = new Schema<UserDocument>({
   firstName: {
     type: String,
@@ -38,8 +43,11 @@ const UserSchema = new Schema<UserDocument>({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
-    default: "user",
+    enum: {
+      values: [UserRole.user, UserRole.admin],
+      message: "value must be of type UserRole",
+    },
+    default: UserRole.user,
   },
 });
 UserSchema.methods.createJWT = function () {
