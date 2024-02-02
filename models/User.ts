@@ -1,18 +1,25 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-interface UserDocument extends Document {
-  // user schema fields
+export const emailRegex =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+export interface UserDetails {
+  _id?: ObjectId;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   role: string;
+}
+
+interface UserDocument extends UserDetails, Document<ObjectId> {
+  // user schema fields
 
   // user schema methods
   createJWT: () => string; // define the createJWT method
-  comparePassword: (candidatePassword: string) => boolean; // define the createJWT method
+  comparePassword: (candidatePassword: string) => Promise<boolean>; // define the createJWT method
 }
 export enum UserRole {
   user = "user",
@@ -31,10 +38,7 @@ const UserSchema = new Schema<UserDocument>({
   email: {
     type: String,
     required: [true, "Please provide email"],
-    match: [
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      "Please provide valid email",
-    ],
+    match: [emailRegex, "Please provide valid email"],
     unique: true,
   },
   password: {
@@ -51,8 +55,11 @@ const UserSchema = new Schema<UserDocument>({
   },
 });
 UserSchema.methods.createJWT = function () {
+  this.password = undefined;
   return jwt.sign(
-    { userId: this._id, name: this.name },
+    {
+      user: this,
+    },
     process.env.JWT_SECRET as string,
     {
       expiresIn: process.env.JWT_LIFETIME,

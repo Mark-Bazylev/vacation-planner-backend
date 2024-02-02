@@ -12,13 +12,14 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimiter from "express-rate-limit";
 //middleware
-import authenticateUser from "./middleware/authentication";
 import notFoundMiddleware from "./middleware/not-found";
+import authenticateUser from "./middleware/authentication";
 import errorHandlerMiddleware from "./middleware/error-handler";
 dotenv.config();
 import authRouter from "./routes/auth";
+import vacationsRouter from "./routes/vacations";
 import connectDB from "./db/connect";
-import NotFoundMiddleware from "./middleware/not-found";
+
 const app: Application = express();
 const PORT = process.env.PORT || 3001;
 
@@ -37,8 +38,9 @@ app.use(helmet());
 //Routes
 app.use("/yo", (req, res) => res.status(200).send("Welcome my dude"));
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/vacations", authenticateUser, vacationsRouter);
 app.use(errorHandlerMiddleware);
-app.use(NotFoundMiddleware);
+app.use(notFoundMiddleware);
 
 const server = createServer(app);
 const start = async () => {

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { capitalizeFirstLetter } from "../utils";
 
 const errorHandler = (
   err: any,
@@ -8,7 +9,7 @@ const errorHandler = (
   next: NextFunction,
 ) => {
   let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
-  let message = err.message || " Internal Server Error";
+  let message = err.message || "Internal Server Error";
 
   if (err.name === "ValidationError") {
     statusCode = StatusCodes.BAD_REQUEST;
@@ -19,14 +20,15 @@ const errorHandler = (
     statusCode = StatusCodes.NOT_FOUND;
   }
   if (err.code && err.code === 11000) {
-    message = `Duplicate value entered for ${Object.keys(
-      err.keyValue,
-    )} field, please choose another value`;
+    const duplicateErrorKeyString = capitalizeFirstLetter(
+      Object.keys(err.keyValue)[0],
+    );
+    message = `${duplicateErrorKeyString} is already taken`;
     statusCode = StatusCodes.BAD_REQUEST;
   }
 
   res.status(statusCode).json({
-    error: message,
+    message,
   });
 };
 export default errorHandler;

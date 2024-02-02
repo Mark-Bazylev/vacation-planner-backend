@@ -3,7 +3,7 @@ import User from "../models/User";
 import { StatusCodes } from "http-status-codes";
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import { UnauthenticatedError } from "../errors";
+import { BadRequestError, UnauthenticatedError } from "../errors";
 interface UserRequestBody {
   email: string;
   firstName: string;
@@ -21,7 +21,9 @@ export async function register(
 ) {
   try {
     const { email, firstName, lastName, password, role } = req.body;
-
+    if (password.length <= 4) {
+      throw new BadRequestError("Password must be at least 4 characters long");
+    }
     const hashedPassword = await hashPassword(password);
 
     const user = await User.create({
@@ -32,8 +34,8 @@ export async function register(
       password: hashedPassword,
     });
     const token = user.createJWT();
-    res.status(StatusCodes.CREATED as number).json({
-      user: { firstName, lastName, email, role, password, hashedPassword },
+    res.status(StatusCodes.CREATED).json({
+      user,
       token,
     });
   } catch (e) {
@@ -56,7 +58,7 @@ export async function login(
     }
     const token = user?.createJWT();
 
-    res.status(StatusCodes.OK).json({ user, token, isPasswordCorrect });
+    res.status(StatusCodes.OK).json({ user, token });
   } catch (e) {
     next(e);
   }
