@@ -4,9 +4,8 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError } from "../errors";
 import Follower from "../models/Follower";
 import { FilterQuery } from "mongoose";
-import vacation from "../models/Vacation";
-import NotFound from "../middleware/not-found";
 import NotFoundError from "../errors/not-found";
+import { deleteImageFile } from "../utils/deleteImageFile";
 
 interface VacationRequestBody {
   destination: string;
@@ -23,7 +22,7 @@ interface VacationQueryParams {
   isActiveVacation: string;
   [key: string]: string;
 }
-interface VacationRequest extends Request {
+export interface VacationRequest extends Request {
   body: VacationRequestBody;
   query: VacationQueryParams;
   user?: any;
@@ -31,7 +30,11 @@ interface VacationRequest extends Request {
 
 export async function addVacation(req: VacationRequest, res: Response, next: NextFunction) {
   try {
+    console.log(req.body);
     const { destination, description, checkIn, checkOut, price, imageName } = req.body;
+    if (!req.file) {
+      throw new BadRequestError("No file uploaded");
+    }
     const vacation = await Vacation.create({
       destination,
       description,
@@ -40,7 +43,56 @@ export async function addVacation(req: VacationRequest, res: Response, next: Nex
       price,
       imageName,
     });
+    res.status(StatusCodes.CREATED).json({ vacation });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function editVacation(req: VacationRequest, res: Response, next: NextFunction) {
+  try {
+    const {
+      params: { id: vacationId },
+    } = req;
+    const { destination, description, checkIn, checkOut, price, imageName } = req.body;
+    let existingImage: string | undefined = imageName;
+    if (!req.file) {
+      existingImage = undefined;
+    } else {
+      const oldVacation = await Vacation.findById(vacationId);
+      if (oldVacation) deleteImageFile(oldVacation.imageName);
+    }
+    const vacation = await Vacation.findByIdAndUpdate(
+      vacationId,
+      {
+        destination,
+        description,
+        checkIn,
+        checkOut,
+        price,
+        imageName: existingImage,
+      },
+      { new: true },
+    ).populate({ path: "followers", transform: (follower) => follower.userId });
+
     res.status(StatusCodes.CREATED).json(vacation);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function deleteVacation(req: VacationRequest, res: Response, next: NextFunction) {
+  try {
+    const {
+      params: { id: vacationId },
+    } = req;
+
+    const vacation = await Vacation.findByIdAndDelete(vacationId).populate({
+      path: "followers",
+      transform: (follower) => follower.userId,
+    });
+    if (vacation) deleteImageFile(vacation.imageName);
+    res.status(StatusCodes.OK).json(vacation);
   } catch (e) {
     next(e);
   }
@@ -139,6 +191,24 @@ export async function toggleFollowVacation(
       res.status(StatusCodes.CREATED).json({ follower });
     }
   } catch (e) {
+    next(e);
+  }
+}
+
+export async function uploadImageVacation(req: Request, res: Response, next: NextFunction) {
+  try {
+    req.body.fileName;
+    if (!req.file) {
+      throw new BadRequestError("No file uploaded");
+    }
+    // Access uploaded file details from req.file
+    // Handle the file as needed, e.g., save it to the database, process it, etc.
+    console.log(req);
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: "File uploaded successfully", file: req.file });
+  } catch (e) {
+    console.log(e);
     next(e);
   }
 }

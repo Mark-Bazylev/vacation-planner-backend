@@ -1,9 +1,7 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-
-export const emailRegex =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+import { emailRegex } from "../utils";
 
 export interface UserDetails {
   _id?: ObjectId;
@@ -67,9 +65,7 @@ UserSchema.methods.createJWT = function () {
   );
 };
 
-UserSchema.methods.comparePassword = async function (
-  candidatePassword: string,
-) {
+UserSchema.methods.comparePassword = async function (candidatePassword: string) {
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
   console.log(candidatePassword, this.password);
   console.log(isMatch);
