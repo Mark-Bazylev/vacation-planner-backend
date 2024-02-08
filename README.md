@@ -9,7 +9,7 @@
 
 ## Usage
 
-## 1.  **Start the Server:**
+## 1. **Start the Server:**
    - Run `npm install` to install dependencies.
    - Create a `.env` file and configure necessary environment variables.
    - Run `npm start` to start the server.
