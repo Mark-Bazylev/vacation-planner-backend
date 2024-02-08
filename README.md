@@ -9,12 +9,12 @@
 
 ## Usage
 
-1. **Start the Server:**
+## 1.  **Start the Server:**
    - Run `npm install` to install dependencies.
    - Create a `.env` file and configure necessary environment variables.
    - Run `npm start` to start the server.
 
-2. **Interacting with the API:**
+## 2. **Interacting with the API:**
    - Use Postman or any other API testing tool to interact with the backend API.
    - Ensure to include a Bearer token in the header for authorization for all vacation-related APIs.
 
@@ -73,7 +73,7 @@
        - Endpoint: `DELETE /api/v1/vacations/delete/:id`
        - Description: Deletes the vacation entry with the specified ID from the database.
 
-3. **Environment Variables:**
+## 3. **Environment Variables:**
    - Ensure you have set up the necessary environment variables in the `.env` file. Example variables include:
      - `MONGO_URI`: MongoDB connection URI.
      - `JWT_SECRET`: Secret key for JWT token generation.
