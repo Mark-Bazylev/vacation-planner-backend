@@ -3,9 +3,9 @@
 ## Table of Contents
 
 - [Usage](#usage)
-  - [Start the Server](#start-the-server)
-  - [Interacting with the API](#interacting-with-the-api)
-  - [Environment Variables](#environment-variables)
+  - [Start the Server](#1-start-the-server)
+  - [Interacting with the API](#2-interacting-with-the-api)
+  - [Environment Variables](#3-environment-variables)
 
 ## Usage
 
