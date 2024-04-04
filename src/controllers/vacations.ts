@@ -3,9 +3,10 @@ import Vacation, { VacationDocument } from "../models/Vacation";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError } from "../errors";
 import Follower from "../models/Follower";
-import { FilterQuery } from "mongoose";
+import { Expression, FilterQuery } from "mongoose";
 import NotFoundError from "../errors/not-found";
 import { deleteImageFile } from "../utils/deleteImageFile";
+import vacations from "../routes/vacations";
 
 interface VacationRequestBody {
   destination: string;
@@ -23,6 +24,7 @@ interface VacationQueryParams {
   [key: string]: string;
 }
 export interface VacationRequest extends Request {
+  fileNames?: string[];
   body: VacationRequestBody;
   query: VacationQueryParams;
   user?: any;
@@ -91,7 +93,10 @@ export async function deleteVacation(req: VacationRequest, res: Response, next: 
       path: "followers",
       transform: (follower) => follower.userId,
     });
-    if (vacation) deleteImageFile(vacation.imageName);
+    if (vacation) {
+      deleteImageFile(vacation.imageName);
+      await Follower.deleteMany({ vacationId: { $in: vacation.followers } });
+    }
     res.status(StatusCodes.OK).json(vacation);
   } catch (e) {
     next(e);
@@ -190,6 +195,20 @@ export async function toggleFollowVacation(
       const follower = await Follower.create({ userId: user._id, vacationId });
       res.status(StatusCodes.CREATED).json({ follower });
     }
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function getVacationsReport(req: Request, res: Response, next: NextFunction) {
+  try {
+    const vacationsReport = await Vacation.find()
+      .populate({
+        path: "followers",
+        transform: (follower) => follower.userId,
+      })
+      .select("destination");
+    res.status(StatusCodes.OK).json(vacationsReport);
   } catch (e) {
     next(e);
   }

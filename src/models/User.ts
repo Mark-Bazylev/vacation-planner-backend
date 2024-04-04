@@ -53,7 +53,6 @@ const UserSchema = new Schema<UserDocument>({
   },
 });
 UserSchema.methods.createJWT = function () {
-  this.password = undefined;
   return jwt.sign(
     {
       user: this,

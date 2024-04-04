@@ -10,10 +10,9 @@ const storage = multer.diskStorage({
   filename: function (req: VacationRequest, file, cb) {
     if (file) {
       const fileId = uuidv4();
-      console.log("is this valid?", validate(fileId));
-      const fileName = fileId + "." + file.originalname.split(".")[1];
-      req.body.imageName = fileName;
-      cb(null, fileName);
+      const uniqueImageName = fileId + "." + file.originalname.split(".").pop();
+      req.body.imageName = uniqueImageName;
+      cb(null, uniqueImageName);
     }
   },
 });
