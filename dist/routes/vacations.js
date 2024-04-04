@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const vacations_1 = require("../controllers/vacations");
+const image_handler_1 = require("../middleware/image-handler");
+const router = express_1.default.Router();
+const uploadImage = image_handler_1.multerUpload.single("imageFile");
+router.route("/get/:id").get(vacations_1.getVacation);
+router.route("/byPage").get(vacations_1.getVacationsByPage);
+router.route("/report").get(vacations_1.getVacationsReport);
+router.route("/follow/:id").post(vacations_1.toggleFollowVacation);
+router.route("/add").post(uploadImage, vacations_1.addVacation);
+router.route("/edit/:id").patch(uploadImage, vacations_1.editVacation);
+router.route("/delete/:id").delete(vacations_1.deleteVacation);
+router.route("/addMany").post(image_handler_1.multerUpload.array("imageFile", 10), vacations_1.addManyVacations);
+router.route("/upload").post(uploadImage, vacations_1.uploadImageVacation);
+exports.default = router;
