@@ -42,7 +42,7 @@ app.use(helmet_1.default.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use("/assets", express_1.default.static("assets"));
 //Routes
 app.get("/test", (req, res, next) => {
-    res.send("Welcome to the backend :)");
+    return res.send("Welcome to the backend :)");
 });
 app.use("/api/v1/auth", auth_1.default);
 app.use("/api/v1/vacations", authentication_1.default, vacations_1.default);
