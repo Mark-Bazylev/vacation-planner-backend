@@ -18,15 +18,17 @@ const http_status_codes_1 = require("http-status-codes");
 const errors_1 = require("../errors");
 const Follower_1 = __importDefault(require("../models/Follower"));
 const not_found_1 = __importDefault(require("../errors/not-found"));
-const deleteImageFile_1 = require("../utils/deleteImageFile");
+const vercel_image_handler_1 = require("../utils/vercel-image-handler");
 function addVacation(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             console.log(req.body);
-            const { destination, description, checkIn, checkOut, price, imageName } = req.body;
-            if (!req.file) {
-                throw new errors_1.BadRequestError("No file uploaded");
-            }
+            const { destination, description, checkIn, checkOut, price } = req.body;
+            // if (!req.file) {
+            //   throw new BadRequestError("No file uploaded");
+            // }
+            console.log(req.files, "and this too", req.body);
+            const imageName = yield (0, vercel_image_handler_1.vercelPutImage)(req.files.imageFile);
             const vacation = yield Vacation_1.default.create({
                 destination,
                 description,
@@ -47,15 +49,20 @@ function editVacation(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { params: { id: vacationId }, } = req;
-            const { destination, description, checkIn, checkOut, price, imageName } = req.body;
-            let existingImage = imageName;
-            if (!req.file) {
+            const { destination, description, checkIn, checkOut, price } = req.body;
+            const oldVacation = yield Vacation_1.default.findById(vacationId);
+            if (!oldVacation) {
+                throw new errors_1.BadRequestError("vacationId is invalid");
+            }
+            console.log(oldVacation.imageName);
+            let existingImage = oldVacation.imageName;
+            console.log(req.files);
+            if (!req.files.imageFile) {
                 existingImage = undefined;
             }
             else {
-                const oldVacation = yield Vacation_1.default.findById(vacationId);
-                if (oldVacation)
-                    (0, deleteImageFile_1.deleteImageFile)(oldVacation.imageName);
+                yield (0, vercel_image_handler_1.vercelDeleteImage)(oldVacation.imageName);
+                existingImage = yield (0, vercel_image_handler_1.vercelPutImage)(req.files.imageFile);
             }
             const vacation = yield Vacation_1.default.findByIdAndUpdate(vacationId, {
                 destination,
@@ -82,7 +89,7 @@ function deleteVacation(req, res, next) {
                 transform: (follower) => follower.userId,
             });
             if (vacation) {
-                (0, deleteImageFile_1.deleteImageFile)(vacation.imageName);
+                yield (0, vercel_image_handler_1.vercelDeleteImage)(vacation.imageName);
                 yield Follower_1.default.deleteMany({ vacationId: { $in: vacation.followers } });
             }
             res.status(http_status_codes_1.StatusCodes.OK).json(vacation);

@@ -13,6 +13,7 @@ import authRouter from "./routes/auth";
 import vacationsRouter from "./routes/vacations";
 import connectDB from "./db/connect";
 import path from "path";
+import fileUpload from "express-fileupload";
 dotenv.config();
 
 const app: Application = express();
@@ -27,6 +28,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use(fileUpload());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 //Static File Route

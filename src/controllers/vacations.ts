@@ -7,6 +7,9 @@ import { Expression, FilterQuery } from "mongoose";
 import NotFoundError from "../errors/not-found";
 import { deleteImageFile } from "../utils/deleteImageFile";
 import vacations from "../routes/vacations";
+import { put } from "@vercel/blob";
+import { FileArray, UploadedFile } from "express-fileupload";
+import { FileTypes, vercelDeleteImage, vercelPutImage } from "../utils/vercel-image-handler";
 
 interface VacationRequestBody {
   destination: string;
@@ -33,10 +36,12 @@ export interface VacationRequest extends Request {
 export async function addVacation(req: VacationRequest, res: Response, next: NextFunction) {
   try {
     console.log(req.body);
-    const { destination, description, checkIn, checkOut, price, imageName } = req.body;
-    if (!req.file) {
-      throw new BadRequestError("No file uploaded");
-    }
+    const { destination, description, checkIn, checkOut, price } = req.body;
+    // if (!req.file) {
+    //   throw new BadRequestError("No file uploaded");
+    // }
+    console.log(req.files, "and this too", req.body);
+    const imageName = await vercelPutImage(req.files!.imageFile);
     const vacation = await Vacation.create({
       destination,
       description,
@@ -56,13 +61,19 @@ export async function editVacation(req: VacationRequest, res: Response, next: Ne
     const {
       params: { id: vacationId },
     } = req;
-    const { destination, description, checkIn, checkOut, price, imageName } = req.body;
-    let existingImage: string | undefined = imageName;
-    if (!req.file) {
+    const { destination, description, checkIn, checkOut, price } = req.body;
+    const oldVacation = await Vacation.findById(vacationId);
+    if (!oldVacation) {
+      throw new BadRequestError("vacationId is invalid");
+    }
+    console.log(oldVacation.imageName);
+    let existingImage: string | undefined = oldVacation.imageName;
+    console.log(req.files);
+    if (!req.files!.imageFile) {
       existingImage = undefined;
     } else {
-      const oldVacation = await Vacation.findById(vacationId);
-      if (oldVacation) deleteImageFile(oldVacation.imageName);
+      await vercelDeleteImage(oldVacation.imageName);
+      existingImage = await vercelPutImage(req.files!.imageFile);
     }
     const vacation = await Vacation.findByIdAndUpdate(
       vacationId,
@@ -94,7 +105,7 @@ export async function deleteVacation(req: VacationRequest, res: Response, next: 
       transform: (follower) => follower.userId,
     });
     if (vacation) {
-      deleteImageFile(vacation.imageName);
+      await vercelDeleteImage(vacation.imageName);
       await Follower.deleteMany({ vacationId: { $in: vacation.followers } });
     }
     res.status(StatusCodes.OK).json(vacation);

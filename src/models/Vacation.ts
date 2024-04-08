@@ -17,7 +17,7 @@ const VacationSchema = new Schema<VacationDocument>(
     checkIn: { type: Date, required: [true, "Please add check in date"] },
     checkOut: { type: Date, required: [true, "Please add check out date"] },
     price: { type: String, required: [true, "Please add in check in date"] },
-    imageName: { type: String, required: [true, "Please add in check in date"] },
+    imageName: { type: String },
   },
   {
     toJSON: { virtuals: true },

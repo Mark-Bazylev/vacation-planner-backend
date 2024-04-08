@@ -27,6 +27,7 @@ const auth_1 = __importDefault(require("./routes/auth"));
 const vacations_1 = __importDefault(require("./routes/vacations"));
 const connect_1 = __importDefault(require("./db/connect"));
 const path_1 = __importDefault(require("path"));
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
@@ -37,6 +38,7 @@ app.use((0, express_rate_limit_1.default)({
     limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
 }));
 app.use(express_1.default.json());
+app.use((0, express_fileupload_1.default)());
 app.use(helmet_1.default.crossOriginResourcePolicy({ policy: "cross-origin" }));
 //Static File Route
 app.use("/assets", express_1.default.static("assets"));
