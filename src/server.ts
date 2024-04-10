@@ -12,7 +12,6 @@ import errorHandlerMiddleware from "./middleware/error-handler";
 import authRouter from "./routes/auth";
 import vacationsRouter from "./routes/vacations";
 import connectDB from "./db/connect";
-import path from "path";
 import fileUpload from "express-fileupload";
 dotenv.config();
 
@@ -35,9 +34,6 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use("/assets", express.static("assets"));
 
 //Routes
-app.get("/test", (req, res, next) => {
-  return res.send("Welcome to the backend :)");
-});
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/vacations", authenticateUser, vacationsRouter);
 app.use(errorHandlerMiddleware);
@@ -48,7 +44,6 @@ const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI!);
     server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
-    console.log(path.join(__dirname, "../", process.env.IMAGE_UPLOAD_PATH!, "hi"));
   } catch (error) {
     console.log(error);
   }

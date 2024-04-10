@@ -26,7 +26,6 @@ const error_handler_1 = __importDefault(require("./middleware/error-handler"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const vacations_1 = __importDefault(require("./routes/vacations"));
 const connect_1 = __importDefault(require("./db/connect"));
-const path_1 = __importDefault(require("path"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -43,9 +42,6 @@ app.use(helmet_1.default.crossOriginResourcePolicy({ policy: "cross-origin" }));
 //Static File Route
 app.use("/assets", express_1.default.static("assets"));
 //Routes
-app.get("/test", (req, res, next) => {
-    return res.send("Welcome to the backend :)");
-});
 app.use("/api/v1/auth", auth_1.default);
 app.use("/api/v1/vacations", authentication_1.default, vacations_1.default);
 app.use(error_handler_1.default);
@@ -55,7 +51,6 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, connect_1.default)(process.env.MONGO_URI);
         server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
-        console.log(path_1.default.join(__dirname, "../", process.env.IMAGE_UPLOAD_PATH, "hi"));
     }
     catch (error) {
         console.log(error);
