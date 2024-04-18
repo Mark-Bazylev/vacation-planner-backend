@@ -16,5 +16,5 @@ router.route("/delete/:id").delete(vacations_1.deleteVacation);
 router.route("/book/:id").post(vacations_1.bookVacation);
 router.route("/bookedVacations").get(vacations_1.getBookedVacation);
 router.route("/setBookingStatus/:id").post(vacations_1.setBookingStatus);
-router.route("/rejectExpiredStatus").get(vacations_1.bookingsCleanup);
+router.route("/bookingsCleanup").get(vacations_1.bookingsCleanup);
 exports.default = router;

@@ -28,6 +28,6 @@ router.route("/bookedVacations").get(getBookedVacation);
 
 router.route("/setBookingStatus/:id").post(setBookingStatus);
 
-router.route("/rejectExpiredStatus").get(bookingsCleanup);
+router.route("/bookingsCleanup").get(bookingsCleanup);
 
 export default router;
