@@ -10,6 +10,7 @@ import {
   bookVacation,
   getBookedVacation,
   setBookingStatus,
+  rejectExpiredStatus,
 } from "../controllers/vacations";
 
 const router = express.Router();
@@ -26,5 +27,7 @@ router.route("/book/:id").post(bookVacation);
 router.route("/bookedVacations").get(getBookedVacation);
 
 router.route("/setBookingStatus/:id").post(setBookingStatus);
+
+router.route("/rejectExpiredStatus").get(rejectExpiredStatus);
 
 export default router;

@@ -7,6 +7,7 @@ import {
   vacationsService,
 } from "../services/vacations-service/vacations.service";
 import { BadRequestError } from "../errors";
+import Booking, { BookingStatus } from "../models/Booking";
 
 export interface VacationRequest extends Request {
   fileNames?: string[];
@@ -150,6 +151,16 @@ export async function setBookingStatus(req: VacationRequest, res: Response, next
       bookingId,
       status,
     });
+    res.status(StatusCodes.OK).json({ booking });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function rejectExpiredStatus(req: VacationRequest, res: Response, next: NextFunction) {
+  try {
+    console.log("this function ticks");
+    const booking = await Booking.find({ bookingStatus: BookingStatus.pending });
     res.status(StatusCodes.OK).json({ booking });
   } catch (e) {
     next(e);
