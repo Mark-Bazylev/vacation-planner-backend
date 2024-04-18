@@ -136,10 +136,7 @@ class VacationsService {
       })
       .populate({
         path: "bookings",
-        transform: (booking) =>
-          booking.bookingStatus === "approved"
-            ? { bookingStatus: booking.bookingStatus }
-            : undefined,
+        match: { userId },
       })
       .sort({ checkIn: 1 })
       .skip(offset)
@@ -201,13 +198,14 @@ class VacationsService {
     pageIndex: string;
   }) {
     const offset = (+pageIndex - 1) * PAGE_SIZE;
-
+    let vacations, vacationsCount;
     if (userRole === "user") {
       const vacationIds = await Booking.find({ userId }).distinct("vacationId");
       if (vacationIds.length === 0) {
         throw new BadRequestError("No Bookings");
       }
-      return await Vacation.find({ _id: { $in: vacationIds } })
+
+      vacations = await Vacation.find({ _id: { $in: vacationIds } })
         .populate({
           path: "bookings",
           match: { userId },
@@ -215,10 +213,11 @@ class VacationsService {
           select: ["_id", "bookingStatus", "createdAt"],
         })
         .exec();
+
+      vacationsCount = await Vacation.countDocuments({ _id: { $in: vacationIds } });
     } else {
       const pendingVacationIds = await Booking.find({}).distinct("vacationId");
-
-      return await Vacation.find({ _id: { $in: pendingVacationIds } })
+      vacations = await Vacation.find({ _id: { $in: pendingVacationIds } })
         // not the most Optimized solution
         .populate({
           path: "bookings",
@@ -231,7 +230,10 @@ class VacationsService {
         .skip(offset)
         .limit(PAGE_SIZE)
         .exec();
+
+      vacationsCount = await Vacation.countDocuments({ _id: { $in: pendingVacationIds } });
     }
+    return { vacations, vacationsCount };
   }
 
   public async setBookingStatus({ bookingId, status }: { bookingId: string; status: string }) {

@@ -8,7 +8,6 @@ import {
 } from "../services/vacations-service/vacations.service";
 import { BadRequestError } from "../errors";
 import Booking, { BookingStatus } from "../models/Booking";
-import { ObjectId } from "mongoose";
 import { timeUntilDeadline } from "../utils";
 
 export interface VacationRequest extends Request {
@@ -120,12 +119,12 @@ export async function getBookedVacation(req: VacationRequest, res: Response, nex
       user,
       query: { pageIndex },
     } = req;
-    const booking = await vacationsService.getBookedVacations({
+    const { vacations, vacationsCount } = await vacationsService.getBookedVacations({
       userId: user._id,
       userRole: user.role,
       pageIndex,
     });
-    res.status(StatusCodes.OK).json(booking);
+    res.status(StatusCodes.OK).json({ vacations, count: vacationsCount });
   } catch (e) {
     next(e);
   }

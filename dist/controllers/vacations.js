@@ -136,12 +136,12 @@ function getBookedVacation(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { user, query: { pageIndex }, } = req;
-            const booking = yield vacations_service_1.vacationsService.getBookedVacations({
+            const { vacations, vacationsCount } = yield vacations_service_1.vacationsService.getBookedVacations({
                 userId: user._id,
                 userRole: user.role,
                 pageIndex,
             });
-            res.status(http_status_codes_1.StatusCodes.OK).json(booking);
+            res.status(http_status_codes_1.StatusCodes.OK).json({ vacations, count: vacationsCount });
         }
         catch (e) {
             next(e);

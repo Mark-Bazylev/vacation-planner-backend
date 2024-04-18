@@ -137,9 +137,7 @@ class VacationsService {
             })
                 .populate({
                 path: "bookings",
-                transform: (booking) => booking.bookingStatus === "approved"
-                    ? { bookingStatus: booking.bookingStatus }
-                    : undefined,
+                match: { userId },
             })
                 .sort({ checkIn: 1 })
                 .skip(offset)
@@ -190,12 +188,13 @@ class VacationsService {
     getBookedVacations(_a) {
         return __awaiter(this, arguments, void 0, function* ({ userId, userRole, pageIndex, }) {
             const offset = (+pageIndex - 1) * PAGE_SIZE;
+            let vacations, vacationsCount;
             if (userRole === "user") {
                 const vacationIds = yield Booking_1.default.find({ userId }).distinct("vacationId");
                 if (vacationIds.length === 0) {
                     throw new errors_1.BadRequestError("No Bookings");
                 }
-                return yield Vacation_1.default.find({ _id: { $in: vacationIds } })
+                vacations = yield Vacation_1.default.find({ _id: { $in: vacationIds } })
                     .populate({
                     path: "bookings",
                     match: { userId },
@@ -203,10 +202,11 @@ class VacationsService {
                     select: ["_id", "bookingStatus", "createdAt"],
                 })
                     .exec();
+                vacationsCount = yield Vacation_1.default.countDocuments({ _id: { $in: vacationIds } });
             }
             else {
                 const pendingVacationIds = yield Booking_1.default.find({}).distinct("vacationId");
-                return yield Vacation_1.default.find({ _id: { $in: pendingVacationIds } })
+                vacations = yield Vacation_1.default.find({ _id: { $in: pendingVacationIds } })
                     // not the most Optimized solution
                     .populate({
                     path: "bookings",
@@ -219,7 +219,9 @@ class VacationsService {
                     .skip(offset)
                     .limit(PAGE_SIZE)
                     .exec();
+                vacationsCount = yield Vacation_1.default.countDocuments({ _id: { $in: pendingVacationIds } });
             }
+            return { vacations, vacationsCount };
         });
     }
     setBookingStatus(_a) {

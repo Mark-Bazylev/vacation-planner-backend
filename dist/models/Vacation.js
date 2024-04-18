@@ -23,13 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QuotaStatus = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-var QuotaStatus;
-(function (QuotaStatus) {
-    QuotaStatus["full"] = "full";
-    QuotaStatus["available"] = "available";
-})(QuotaStatus || (exports.QuotaStatus = QuotaStatus = {}));
 const VacationSchema = new mongoose_1.Schema({
     destination: { type: String, required: [true, "Please add destination"] },
     description: { type: String, required: [true, "Please add description"] },

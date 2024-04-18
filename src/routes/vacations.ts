@@ -10,7 +10,6 @@ import {
   bookVacation,
   getBookedVacation,
   setBookingStatus,
-  bookingsCleanup,
 } from "../controllers/vacations";
 
 const router = express.Router();

@@ -1,10 +1,6 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 import { BookingDocument } from "./Booking";
 
-export enum QuotaStatus {
-  full = "full",
-  available = "available",
-}
 export interface VacationDocument extends Document {
   destination: string;
   description: string;
