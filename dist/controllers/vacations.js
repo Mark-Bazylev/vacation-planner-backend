@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVacationsReport = exports.toggleFollowVacation = exports.getVacationsByPage = exports.getVacation = exports.deleteVacation = exports.editVacation = exports.addVacation = void 0;
+exports.setBookingStatus = exports.getVacationsReport = exports.getBookedVacation = exports.bookVacation = exports.toggleFollowVacation = exports.getVacationsByPage = exports.getVacation = exports.deleteVacation = exports.editVacation = exports.addVacation = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const vacations_service_1 = require("../services/vacations-service/vacations.service");
+const errors_1 = require("../errors");
 function addVacation(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -26,9 +27,10 @@ function addVacation(req, res, next) {
 exports.addVacation = addVacation;
 function editVacation(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             const { params: { id: vacationId }, } = req;
-            const vacation = yield vacations_service_1.vacationsService.editVacation(Object.assign({ vacationId, imageFile: req.files.imageFile }, req.body));
+            const vacation = yield vacations_service_1.vacationsService.editVacation(Object.assign({ vacationId, imageFile: (_a = req.files) === null || _a === void 0 ? void 0 : _a.imageFile }, req.body));
             res.status(http_status_codes_1.StatusCodes.CREATED).json(vacation);
         }
         catch (e) {
@@ -92,6 +94,36 @@ function toggleFollowVacation(req, res, next) {
     });
 }
 exports.toggleFollowVacation = toggleFollowVacation;
+function bookVacation(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { user, params: { id: vacationId }, } = req;
+            const booking = yield vacations_service_1.vacationsService.bookVacation({ userId: user._id, vacationId });
+            res.status(http_status_codes_1.StatusCodes.CREATED).json(booking);
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+}
+exports.bookVacation = bookVacation;
+function getBookedVacation(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { user, query: { pageIndex }, } = req;
+            const booking = yield vacations_service_1.vacationsService.getBookedVacations({
+                userId: user._id,
+                userRole: user.role,
+                pageIndex,
+            });
+            res.status(http_status_codes_1.StatusCodes.OK).json(booking);
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+}
+exports.getBookedVacation = getBookedVacation;
 function getVacationsReport(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -104,3 +136,22 @@ function getVacationsReport(req, res, next) {
     });
 }
 exports.getVacationsReport = getVacationsReport;
+function setBookingStatus(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { params: { id: bookingId }, body: { status }, } = req;
+            if (!status) {
+                throw new errors_1.BadRequestError("Status is missing");
+            }
+            const booking = yield vacations_service_1.vacationsService.setBookingStatus({
+                bookingId,
+                status,
+            });
+            res.status(http_status_codes_1.StatusCodes.OK).json({ booking });
+        }
+        catch (e) {
+            next(e);
+        }
+    });
+}
+exports.setBookingStatus = setBookingStatus;

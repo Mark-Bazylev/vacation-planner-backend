@@ -7,6 +7,9 @@ import {
   editVacation,
   deleteVacation,
   getVacationsReport,
+  bookVacation,
+  getBookedVacation,
+  setBookingStatus,
 } from "../controllers/vacations";
 
 const router = express.Router();
@@ -18,5 +21,10 @@ router.route("/follow/:id").post(toggleFollowVacation);
 router.route("/add").post(addVacation);
 router.route("/edit/:id").patch(editVacation);
 router.route("/delete/:id").delete(deleteVacation);
+
+router.route("/book/:id").post(bookVacation);
+router.route("/bookedVacations").get(getBookedVacation);
+
+router.route("/setBookingStatus/:id").post(setBookingStatus);
 
 export default router;

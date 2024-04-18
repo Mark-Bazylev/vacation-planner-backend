@@ -13,4 +13,7 @@ router.route("/follow/:id").post(vacations_1.toggleFollowVacation);
 router.route("/add").post(vacations_1.addVacation);
 router.route("/edit/:id").patch(vacations_1.editVacation);
 router.route("/delete/:id").delete(vacations_1.deleteVacation);
+router.route("/book/:id").post(vacations_1.bookVacation);
+router.route("/bookedVacations").get(vacations_1.getBookedVacation);
+router.route("/setBookingStatus/:id").post(vacations_1.setBookingStatus);
 exports.default = router;
