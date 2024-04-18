@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rejectExpiredStatus = exports.setBookingStatus = exports.getVacationsReport = exports.getBookedVacation = exports.bookVacation = exports.toggleFollowVacation = exports.getVacationsByPage = exports.getVacation = exports.deleteVacation = exports.editVacation = exports.addVacation = void 0;
+exports.bookingsCleanup = exports.setBookingStatus = exports.getVacationsReport = exports.getBookedVacation = exports.bookVacation = exports.toggleFollowVacation = exports.getVacationsByPage = exports.getVacation = exports.deleteVacation = exports.editVacation = exports.addVacation = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const vacations_service_1 = require("../services/vacations-service/vacations.service");
 const errors_1 = require("../errors");
@@ -179,7 +179,7 @@ function setBookingStatus(req, res, next) {
     });
 }
 exports.setBookingStatus = setBookingStatus;
-function rejectExpiredStatus(req, res, next) {
+function bookingsCleanup(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             console.log("this function ticks");
@@ -191,4 +191,4 @@ function rejectExpiredStatus(req, res, next) {
         }
     });
 }
-exports.rejectExpiredStatus = rejectExpiredStatus;
+exports.bookingsCleanup = bookingsCleanup;
