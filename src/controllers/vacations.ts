@@ -157,7 +157,7 @@ export async function setBookingStatus(req: VacationRequest, res: Response, next
   }
 }
 
-export async function bookingsCleanup(req: VacationRequest, res: Response, next: NextFunction) {
+export async function bookingsCleanup(req: Request, res: Response, next: NextFunction) {
   try {
     console.log("this function ticks");
     const booking = await Booking.find({ bookingStatus: BookingStatus.pending });

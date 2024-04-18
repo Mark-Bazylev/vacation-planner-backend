@@ -12,19 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const unauthenticated_1 = __importDefault(require("../errors/unauthenticated"));
-function authenticateUser(req, res, next) {
+function cronAuthentication(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         //check the header
         try {
             const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith("Bearer ")) {
-                throw new unauthenticated_1.default("Authentication Invalid");
+            // if not found OR the bearer token does NOT equal the CRON_SECRET
+            if (!authHeader || authHeader != `Bearer ${process.env.CRON_SECRET}`) {
+                throw new unauthenticated_1.default("Cron Authentication is invalid");
             }
-            const token = authHeader.split(" ")[1];
-            const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-            req.user = payload.user;
             next();
         }
         catch (e) {
@@ -32,4 +29,4 @@ function authenticateUser(req, res, next) {
         }
     });
 }
-exports.default = authenticateUser;
+exports.default = cronAuthentication;

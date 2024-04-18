@@ -11,8 +11,10 @@ import authenticateUser from "./middleware/authentication";
 import errorHandlerMiddleware from "./middleware/error-handler";
 import authRouter from "./routes/auth";
 import vacationsRouter from "./routes/vacations";
+import cronRouter from "./routes/cron";
 import connectDB from "./db/connect";
 import fileUpload from "express-fileupload";
+import cronAuthentication from "./middleware/cron-authentication";
 dotenv.config();
 
 const app: Application = express();
@@ -36,6 +38,7 @@ app.use("/assets", express.static("assets"));
 //Routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/vacations", authenticateUser, vacationsRouter);
+app.use("/api/v1/cron", cronAuthentication, cronRouter);
 app.use(errorHandlerMiddleware);
 app.use(notFoundMiddleware);
 

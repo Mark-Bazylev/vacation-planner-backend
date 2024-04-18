@@ -25,8 +25,10 @@ const authentication_1 = __importDefault(require("./middleware/authentication"))
 const error_handler_1 = __importDefault(require("./middleware/error-handler"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const vacations_1 = __importDefault(require("./routes/vacations"));
+const cron_1 = __importDefault(require("./routes/cron"));
 const connect_1 = __importDefault(require("./db/connect"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const cron_authentication_1 = __importDefault(require("./middleware/cron-authentication"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
@@ -44,6 +46,7 @@ app.use("/assets", express_1.default.static("assets"));
 //Routes
 app.use("/api/v1/auth", auth_1.default);
 app.use("/api/v1/vacations", authentication_1.default, vacations_1.default);
+app.use("/api/v1/cron", cron_authentication_1.default, cron_1.default);
 app.use(error_handler_1.default);
 app.use(not_found_1.default);
 const server = (0, http_1.createServer)(app);
