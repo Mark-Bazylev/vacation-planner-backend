@@ -37,6 +37,7 @@ const http_status_codes_1 = require("http-status-codes");
 const vacations_service_1 = require("../services/vacations-service/vacations.service");
 const errors_1 = require("../errors");
 const Booking_1 = __importStar(require("../models/Booking"));
+const utils_1 = require("../utils");
 function addVacation(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -183,8 +184,14 @@ function bookingsCleanup(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             console.log("this function ticks");
-            const booking = yield Booking_1.default.find({ bookingStatus: Booking_1.BookingStatus.pending });
-            res.status(http_status_codes_1.StatusCodes.OK).json({ booking });
+            const dates = yield Booking_1.default.find({ bookingStatus: Booking_1.BookingStatus.pending })
+                .distinct("createdAt")
+                .exec();
+            const expiredDates = dates.filter((createdAt) => (0, utils_1.timeUntilDeadline)(new Date(createdAt)) <= 0);
+            const bookings = yield Booking_1.default.updateMany({ createdAt: { $in: expiredDates } }, {
+                bookingStatus: Booking_1.BookingStatus.rejected,
+            });
+            res.status(http_status_codes_1.StatusCodes.OK).json({ bookings });
         }
         catch (e) {
             next(e);

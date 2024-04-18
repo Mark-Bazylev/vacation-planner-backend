@@ -8,6 +8,8 @@ import {
 } from "../services/vacations-service/vacations.service";
 import { BadRequestError } from "../errors";
 import Booking, { BookingStatus } from "../models/Booking";
+import { ObjectId } from "mongoose";
+import { timeUntilDeadline } from "../utils";
 
 export interface VacationRequest extends Request {
   fileNames?: string[];
@@ -160,8 +162,19 @@ export async function setBookingStatus(req: VacationRequest, res: Response, next
 export async function bookingsCleanup(req: Request, res: Response, next: NextFunction) {
   try {
     console.log("this function ticks");
-    const booking = await Booking.find({ bookingStatus: BookingStatus.pending });
-    res.status(StatusCodes.OK).json({ booking });
+    const dates = await Booking.find({ bookingStatus: BookingStatus.pending })
+      .distinct("createdAt")
+      .exec();
+    const expiredDates = dates.filter(
+      (createdAt) => timeUntilDeadline(new Date(createdAt as string)) <= 0,
+    );
+    const bookings = await Booking.updateMany(
+      { createdAt: { $in: expiredDates } },
+      {
+        bookingStatus: BookingStatus.rejected,
+      },
+    );
+    res.status(StatusCodes.OK).json({ bookings });
   } catch (e) {
     next(e);
   }
