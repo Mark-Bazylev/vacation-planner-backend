@@ -113,7 +113,7 @@ export async function bookVacation(req: VacationRequest, res: Response, next: Ne
   }
 }
 
-export async function getBookedVacation(req: VacationRequest, res: Response, next: NextFunction) {
+export async function getBookedVacations(req: VacationRequest, res: Response, next: NextFunction) {
   try {
     const {
       user,

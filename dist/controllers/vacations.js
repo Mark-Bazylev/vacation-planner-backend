@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bookingsCleanup = exports.setBookingStatus = exports.getVacationsReport = exports.getBookedVacation = exports.bookVacation = exports.toggleFollowVacation = exports.getVacationsByPage = exports.getVacation = exports.deleteVacation = exports.editVacation = exports.addVacation = void 0;
+exports.bookingsCleanup = exports.setBookingStatus = exports.getVacationsReport = exports.getBookedVacations = exports.bookVacation = exports.toggleFollowVacation = exports.getVacationsByPage = exports.getVacation = exports.deleteVacation = exports.editVacation = exports.addVacation = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const vacations_service_1 = require("../services/vacations-service/vacations.service");
 const errors_1 = require("../errors");
@@ -132,7 +132,7 @@ function bookVacation(req, res, next) {
     });
 }
 exports.bookVacation = bookVacation;
-function getBookedVacation(req, res, next) {
+function getBookedVacations(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { user, query: { pageIndex }, } = req;
@@ -148,7 +148,7 @@ function getBookedVacation(req, res, next) {
         }
     });
 }
-exports.getBookedVacation = getBookedVacation;
+exports.getBookedVacations = getBookedVacations;
 function getVacationsReport(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

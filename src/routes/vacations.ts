@@ -8,7 +8,7 @@ import {
   deleteVacation,
   getVacationsReport,
   bookVacation,
-  getBookedVacation,
+  getBookedVacations,
   setBookingStatus,
 } from "../controllers/vacations";
 
@@ -23,7 +23,7 @@ router.route("/edit/:id").patch(editVacation);
 router.route("/delete/:id").delete(deleteVacation);
 
 router.route("/book/:id").post(bookVacation);
-router.route("/bookedVacations").get(getBookedVacation);
+router.route("/bookedVacations").get(getBookedVacations);
 
 router.route("/setBookingStatus/:id").post(setBookingStatus);
 

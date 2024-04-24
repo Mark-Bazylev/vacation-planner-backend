@@ -15,10 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const unauthenticated_1 = __importDefault(require("../errors/unauthenticated"));
 function cronAuthentication(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        //check the header
         try {
             const authHeader = req.headers.authorization;
-            // if not found OR the bearer token does NOT equal the CRON_SECRET
             if (!authHeader || authHeader != `Bearer ${process.env.CRON_SECRET}`) {
                 throw new unauthenticated_1.default("Cron Authentication is invalid");
             }
